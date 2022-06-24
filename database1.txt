@@ -1,0 +1,49 @@
+CREATE database appricenoodle;
+create table users (
+	user_id int not null AUTO_INCREMENT PRIMARY KEY,
+	user_fname varchar(50),
+	user_lname varchar(50),
+	user_number varchar(10), 
+	user_role varchar(1),
+	user_address varchar(100),
+	user_name varchar(30) not null,
+	user_password varchar(255) not null
+);
+
+create table product(
+	product_id int not null AUTO_INCREMENT PRIMARY KEY,
+	product_name varchar(20),
+	product_img text,
+	product_description text,
+	user_id int,
+	FOREIGN KEY (user_id) REFERENCES users(user_id)
+)
+
+create table public_relations(
+	pr_id int not null AUTO_INCREMENT PRIMARY KEY,
+	pr_date date,
+	pr_description text,
+	user_id int,
+	FOREIGN KEY (user_id) REFERENCES users(user_id)
+)
+
+)
+create table orders(
+	order_id int not null AUTO_INCREMENT PRIMARY KEY,
+	order_date date,
+	order_getdate date,
+	order_address varchar(100),
+	order_total float,
+	user_id int,
+	FOREIGN KEY (user_id) REFERENCES users(user_id)
+
+)
+create table order_detail(
+	orderD_id int not null AUTO_INCREMENT PRIMARY KEY,
+	orderD_qty int,
+	orderD_dep float,
+	order_id int,
+	FOREIGN KEY (user_id) REFERENCES users(user_id),
+	product_id int,
+	FOREIGN KEY (product_id) REFERENCES product(product_id)
+)
