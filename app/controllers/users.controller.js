@@ -79,7 +79,7 @@ exports.update = async (req, res) => {
   //คำสั่ง SQL
   let sql = `UPDATE users SET user_fname = ?,user_lname  = ?,user_number = ?,user_address = ?,user_password = ? WHERE user_id = ?`
   //ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-  let data = [fname, lname, number, address , id]
+  let data = [fname, lname, number, address , password ,id]
   //แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await mysql.update(sql, data, (err, data) => {
     if (err)
@@ -122,13 +122,14 @@ exports.login = async (req, res) => {
       res.status(err.status).send({
         message: err.message || 'Some error occurred.',
       })
-    else if (data[0] && verifyingHash(password, data[0].password))  {
-      data[0].token = await signtoken({ id: data[0].id },'1d')
+    else if (data[0] && verifyingHash(password,data[0].password)){
+      data[0].token = await sign({id: data[0].id},'3h')
       delete data[0].password
       res.status(200).json(data[0])
     } else res.status(204).end()
-  })
-}
+    })
+  }
+
 
 
 // exports.number =  (req, res) => {
@@ -143,4 +144,4 @@ exports.login = async (req, res) => {
 //     num1 : number,
 //     num2 : number2
 //    })
-// }
+// 
