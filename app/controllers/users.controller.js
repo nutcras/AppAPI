@@ -108,27 +108,47 @@ exports.deleteOne = async (req, res) => {
     else res.status(204).end()
   })
 }
+exports.login = async (req, res) =>{
+  const { username, password} = req.body
+  if(validate_req(req, res [username, password])) return
 
-exports.login = async (req, res) => {
-  const { username, password } = req.body
-
-  // ตรวจสอบความถูกต้อง request
-  if (validate_req(req, res, [username, password])) return
-  // คำสั่ง SQL
   let sql = `SELECT * FROM users WHERE user_name = '${username}'`
-  //ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
+
   await mysql.get(sql, async (err, data) => {
     if (err)
       res.status(err.status).send({
         message: err.message || 'Some error occurred.',
       })
-    else if (data[0] && verifyingHash(password,data[0].password)){
-      data[0].token = await sign({id: data[0].id},'3h')
-      delete data[0].password
-      res.status(200).json(data[0])
-    } else res.status(204).end()
-    })
-  }
+    else if (data[0] && verifyingHash(password,data[0].user_password)){
+        data[0].token = await sign({id: data[0].user_id},'3h')
+        delete data[0].user_password
+        res.status(200).json(data[0])
+    }
+    else res.status(204).end()
+  })
+
+
+}
+// exports.login = async (req, res) => {
+//   const { username, password } = req.body
+
+//   // ตรวจสอบความถูกต้อง request
+//   if (validate_req(req, res, [username, password])) return
+//   // คำสั่ง SQL
+//   let sql = `SELECT * FROM users WHERE user_name = '${username}'`
+//   //ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
+//   await mysql.get(sql, async (err, data) => {
+//     if (err)
+//       res.status(err.status).send({
+//         message: err.message || 'Some error occurred.',
+//       })
+//     else if (data[0] && password == data[0].password) {
+//       // data[0].token = await signtoken({ id: data[0].id },'1d')verifyingHash(
+//       delete data[0].password
+//       res.status(200).json(data[0])
+//     } else res.status(204).end()
+//     })
+//   }
 
 
 
