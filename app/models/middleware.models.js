@@ -2,7 +2,7 @@ const { sign, verify } = require ('jsonwebtoken');
 const secretkey = process.env.SECRETKEY
 const algorithm = 'HS384'
 
-exports.signtoken = async(data, expires) => {
+exports.sign = async(data, expires) => {
   try {
     return await sign(data, secretkey, {
       algorithm: algorithm,
@@ -13,7 +13,7 @@ exports.signtoken = async(data, expires) => {
   }
 }
 
-exports.verifytoken = async(req, res, next) => {
+exports.verify = async(req, res, next) => {
   let accessToken = getTokenFrom(req)
   if (!accessToken) return res.status(403).send('notToken')
 

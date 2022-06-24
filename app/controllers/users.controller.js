@@ -1,7 +1,7 @@
 const validate_req = require('../models/validate_req.models')
 const mysql = require('../models/mysql.models')
 const { verifyingHash, hashPassword } = require('../models/hashing.models')
-const { signtoken } = require('../models/middleware.models')
+const { sign } = require('../models/middleware.models')
 
 exports.create = async (req, res) => {
   //ดึงข้อมูลจาก request
