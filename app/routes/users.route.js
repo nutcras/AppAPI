@@ -1,7 +1,7 @@
 module.exports = (app) => {
   const router = require('express').Router()
-  const { verifytoken } = require('../models/middleware.models.js')
-  const { create,findAll,findOne,update,deleteOne,login } = require('../controllers/users.controller')
+  const { verify } = require('../models/middleware.models.js')
+  const { create,findAll,findOne,update,deleteOne,login, updatepassword } = require('../controllers/users.controller')
 
   router.post('/', create)
 
@@ -14,6 +14,8 @@ module.exports = (app) => {
 //   router.post('/number',number)
 
   router.put('/:id', update)
+
+  router.put('/password/:id', updatepassword)
 
   router.delete('/:id', deleteOne)
 

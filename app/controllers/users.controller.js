@@ -5,22 +5,25 @@ const { sign } = require('../models/middleware.models')
 
 exports.create = async (req, res) => {
   //ดึงข้อมูลจาก request
-  const { username, password, fname, lname, number, address } = req.body
+  const { fname, lname, number, role, address, username, password, } = req.body
   //ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [username, password])) return
   //คำสั่ง SQL
   let sql = `INSERT INTO users SET ?`
   //ข้อมูลที่จะใส่ ชื่อฟิล : ข้อมูล
   let data = {
-    user_name: username,
-    user_password: hashPassword(password),
+    
     user_fname: fname,
     user_lname: lname,
     user_number: number,
+    user_role: role,
     user_address: address,
+    user_name: username,
+    user_password: hashPassword(password),
+    
   }
   //เพิ่มข้อมูล โดยส่งคำสั่ง SQL เข้าไป
-  await mysql.create(sql, data, (err, data) => {
+  await mysql.create(sql, data, async (err, data) => {
     // if ((err.errno = 1062)) {
     //   return res.status(400).json({
     //     message: 'Username already have',
@@ -31,7 +34,10 @@ exports.create = async (req, res) => {
       res.status(500).send({
         message: err.message || 'Some error occurred.',
       })
-    else res.status(201).json(data)
+    else {
+      data.token = await sign({id: data.user_id},'3h')
+      res.status(201).json(data)
+    }
   })
 }
 
@@ -71,15 +77,35 @@ exports.findOne = async (req, res) => {
 
 exports.update = async (req, res) => {
   //ดึงข้อมูลจาก request
-  const { fname, lname, number , address ,password } = req.body
+  const { fname, lname, number , address } = req.body
   //ดึงข้อมูลจาก params
   const { id } = req.params
   //ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return
   //คำสั่ง SQL
-  let sql = `UPDATE users SET user_fname = ?,user_lname  = ?,user_number = ?,user_address = ?,user_password = ? WHERE user_id = ?`
+  let sql = `UPDATE users SET user_fname = ?,user_lname  = ?,user_number = ?,user_address = ? WHERE user_id = ?`
   //ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-  let data = [fname, lname, number, address , password ,id]
+  let data = [fname, lname, number , address ,  id]
+  //แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
+  await mysql.update(sql, data, (err, data) => {
+    if (err)
+      res.status(err.status).send({
+        message: err.message || 'Some error occurred.',
+      })
+    else res.status(204).end()
+  })
+}
+exports.updatepassword = async (req, res) => {
+  //ดึงข้อมูลจาก request
+  const { password } = req.body
+  //ดึงข้อมูลจาก params
+  const { id } = req.params
+  //ตรวจสอบความถูกต้อง request
+  if (validate_req(req, res, [id])) return
+  //คำสั่ง SQL
+  let sql = `UPDATE users SET user_password = ? WHERE user_id = ?`
+  //ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
+  let data = [ hashPassword(password) ,id]
   //แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await mysql.update(sql, data, (err, data) => {
     if (err)
