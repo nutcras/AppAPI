@@ -5,9 +5,9 @@ const { signtoken } = require('../models/middleware.models')
 
 exports.create = async (req, res) => {
   //ดึงข้อมูลจาก request
-  const { odate, ogetdate, oaddress,total } = req.body
+  const { odate, ogetdate, oaddress,total,small,big,roll,smallprice,bigprice,rollprice,ostatus,userid } = req.body
   //ตรวจสอบความถูกต้อง request
-  if (validate_req(req, res, [odate, ogetdate, oaddress, total])) return
+  if (validate_req(req, res, [ userid])) return
   //คำสั่ง SQL
   let sql = `INSERT INTO orders SET ?`
   //ข้อมูลที่จะใส่ ชื่อฟิล : ข้อมูล
@@ -15,7 +15,16 @@ exports.create = async (req, res) => {
     order_date: odate,
     order_getdate: ogetdate,
     order_address: oaddress,
-    order_total: total
+    order_total: total,
+    order_small: small,
+    order_big: big,
+    order_roll: roll,
+    order_smallprice: smallprice,
+    order_bigprice: bigprice,
+    order_rollprice: rollprice,
+    order_status: ostatus,
+    user_id: userid,
+
 
   }
   //เพิ่มข้อมูล โดยส่งคำสั่ง SQL เข้าไป
@@ -70,15 +79,16 @@ exports.findOne = async (req, res) => {
 
 exports.update = async (req, res) => {
   //ดึงข้อมูลจาก request
-  const { odate ,ogetdate ,oaddress ,total } = req.body
+  const { odate, ogetdate, oaddress, total, small, big, roll, smallprice, bigprice, rollprice, ostatus } = req.body
   //ดึงข้อมูลจาก params
   const { id } = req.params
   //ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [id])) return
   //คำสั่ง SQL
-  let sql = `UPDATE orders SET order_date = ?,order_getdate  = ?,order_address = ?,order_total = ? WHERE order_id = ?`
+  let sql = `UPDATE orders SET order_date = ?, order_getdate  = ?, order_address = ?, order_total = ?,
+            order_small = ?, order_big = ?, order_roll = ?, order_smallprice = ?, order_bigprice = ?, order_rollprice = ?, order_status = ? WHERE order_id = ?`
   //ข้อมูลที่จะแก้ไขโดยเรียงตามลำดับ เครื่องหมาย ?
-  let data = [odate, ogetdate, oaddress, total, id ]
+  let data = [odate, ogetdate, oaddress, total, small, big, roll, smallprice, bigprice, rollprice, ostatus, id ]
   //แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await mysql.update(sql, data, (err, data) => {
     if (err)
@@ -86,6 +96,7 @@ exports.update = async (req, res) => {
         message: err.message || 'Some error occurred.',
       })
     else res.status(204).end()
+
   })
 }
 
