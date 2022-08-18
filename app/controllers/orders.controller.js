@@ -63,15 +63,15 @@ exports.findOne = async (req, res) => {
   // ตรวจสอบความถูกต้อง request
   if (validate_req(req, res, [])) return
   //คำสั่ง SQL
-  let sql = `SELECT * FROM orders WHERE order_id = ${id}`
+  let sql = `SELECT * FROM orders WHERE user_id = ${id}`
   //ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await mysql.get(sql, (err, data) => {
     if (err)
       res.status(err.status).send({
         message: err.message || 'Some error occurred.',
       })
-    else if (data[0]) {
-           res.status(200).json(data[0])
+    else if (data) {
+           res.status(200).json(data)
     }
     else res.status(204).end()
   })

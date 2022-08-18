@@ -81,6 +81,7 @@ exports.update = async (req, res) => {
   //แก้ไขข้อมูล โดยส่งคำสั่ง SQL เข้าไป
   await mysql.update(sql, data, (err, data) => {
     if (err)
+    
       res.status(err.status).send({
         message: err.message || 'Some error occurred.',
       })
