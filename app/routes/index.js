@@ -3,5 +3,4 @@ module.exports = (app) => {
   require('./users.route')(app)
   require('./orders.route')(app)
   require('./public_relations.route')(app)
-
 }

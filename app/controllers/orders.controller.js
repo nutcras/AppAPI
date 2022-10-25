@@ -76,6 +76,28 @@ exports.findOne = async (req, res) => {
     else res.status(204).end()
   })
 }
+exports.reportOrder = async (req, res) => {
+  //ดึงข้อมูลจาก params
+  const { startDate, endDate } = req.body
+  // ตรวจสอบความถูกต้อง request
+  if (validate_req(req, res, [startDate, endDate])) return
+  //คำสั่ง SQL
+  let sql = `SELECT COUNT(order_id) as totalorder, SUM(order_small) as allordersmall, SUM(order_big) as allorderbig, SUM(order_roll) as allorderroll 
+  FROM orders 
+  WHERE order_getdate 
+  BETWEEN '${startDate}' AND '${endDate}'`
+  //ดึงข้อมูล โดยส่งคำสั่ง SQL เข้าไป
+  await mysql.get(sql, (err, data) => {
+    if (err)
+      res.status(err.status).send({
+        message: err.message || 'Some error occurred.',
+      })
+    else if (data) {
+           res.status(200).json(data[0])
+    }
+    else res.status(204).end()
+  })
+}
 
 exports.update = async (req, res) => {
   //ดึงข้อมูลจาก request
